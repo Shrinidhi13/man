@@ -63,6 +63,11 @@
                     if (xhr.status === 200) {
                         document.getElementById('data-container').innerHTML = xhr.responseText;
 
+                        // Add click event listener to each delete button
+                        const deleteButtons = document.querySelectorAll('.delete-button');
+                        deleteButtons.forEach(button => {
+                            button.addEventListener('click', deleteData);
+                        });
                     } else {
                         console.error('Failed to load data');
                     }
@@ -74,6 +79,7 @@
 
 
     </script>
+
 </body>
 
 </html>

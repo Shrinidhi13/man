@@ -2,6 +2,7 @@ const express = require('express');
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 
+
 const app = express();
 const port = process.env.port || 3000;
 const fs = require('fs').promises;
@@ -24,7 +25,7 @@ app.get('/getData', async (req, res) => {
         const documents = await collection.find().toArray();
 
         const renderedHtml = documents.map(doc => `
-            <div>
+            <form action="/delete/${doc.name}" method ="post"">
                 <h2>Name: ${doc.name}</h2>
                 <p>Surname: ${doc.surname}</p>
                 <p>Email: ${doc.email}</p>
@@ -33,9 +34,9 @@ app.get('/getData', async (req, res) => {
                 <p>PDF File: ${doc.pdfFile}</p>
                 <p>User Type: ${doc.user}</p>
                 <p>If choosen other: ${doc['other choice']}</p>
-                
+                <button class="delete-button" id="${doc._id}">Delete</button>
 
-            </div>
+            </form>
             <hr>
         `).join('');
 
@@ -53,4 +54,15 @@ app.listen(port, () => {
 });
 
 
+app.post('/delete/:id', async (req, res) => {
+    const client = await MongoClient.connect(connection_string);
+    const db = client.db(database_name);
+    const collection = db.collection(collection_name);
 
+
+    console.log(req.params.id)
+    // Delete the document by ID
+    await collection.deleteOne({ name: `${req.params.id}` });
+
+    res.redirect('/');
+});
